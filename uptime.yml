@@ -11,8 +11,8 @@
        - name: check uptime
          raw: uptime |awk '{print $3}'
          register: up_time
-#       - debug:
-#           msg: "{{up_time.stdout | regex_replace('(\\r\\n)','') }}"
+       - debug:
+           msg: "{{up_time.stdout | regex_replace('(\\r\\n)','') }}"
 
 
    - name: check uptime
