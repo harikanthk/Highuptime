@@ -1,0 +1,39 @@
+---
+
+   - name: check uptime
+     hosts: all
+     gather_facts: no
+     ignore_unreachable: yes
+     ignore_errors: yes
+     become: no
+
+     tasks:
+       - name: check uptime
+         raw: uptime |awk '{print $3}'
+         register: up_time
+#       - debug:
+#           msg: "{{up_time.stdout | regex_replace('(\\r\\n)','') }}"
+
+
+   - name: check uptime
+     hosts: localhost
+     gather_facts: no
+     ignore_unreachable: yes
+     ignore_errors: True
+     become: no
+     tasks:
+       - name: Communication on high uptime servers
+         mail:
+           host: relay.cust.services
+           port: 25
+           from: chetan.sriram@thomsonreuters.com
+           to: chetan.sriram@thomsonreuters.com
+           subject: Communication on high uptime servers
+           body: |-
+             {% for server, servervars in hostvars.items()  %}
+             {% if servervars.up_time.stdout is defined -%}
+               {% if servervars.up_time.stdout |int >= 2 %}
+                {{"Consider rebooting the server ** "}} {{server}} {{" ** for better performance as it has high uptime of days : "}}{{ servervars.up_time.stdout }}
+               {% endif %}
+             {% endif %}
+             {% endfor %}
